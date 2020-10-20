@@ -1,0 +1,9 @@
+.App {
+  text-align: center;
+}
+.login{
+    width: 30%;
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column; 
+}
