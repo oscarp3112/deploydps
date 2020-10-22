@@ -11,7 +11,7 @@ ReactDOM.render(
   <React.StrictMode>
     <App />
     <div className="footer">
-      <p>&copy; 2020, Universidad Don Bosco, proyecto GCS</p>
+      <p>&copy; 2020, Universidad Don Bosco, Proyecto DPS</p>
     </div>
   </React.StrictMode>,
   document.getElementById('root')

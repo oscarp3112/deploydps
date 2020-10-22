@@ -19,6 +19,8 @@ function App() {
     fecha: '',
     hora: ''
   });
+    //Botón recibos, agregar en acciones
+  //<Link to={`/citas/${citas.idCita}`} className="btn btn-success">Ver recibo</Link>
 
   const handleChange=e=>{
     const {name, value}=e.target;
@@ -138,8 +140,7 @@ function App() {
             <td>{citas.hora}</td>
           <td>
           <button className="btn btn-primary" onClick={()=>seleccionarCita(citas, "Editar")}>Editar</button> {"  "}
-          <button className="btn btn-danger" onClick={()=>seleccionarCita(citas, "Eliminar")}>Eliminar</button>{"  "}
-          <Link to={`/citas/${citas.idCita}`} className="btn btn-success">Ver recibo</Link>
+          <button className="btn btn-danger" onClick={()=>seleccionarCita(citas, "Eliminar")}>Eliminar</button>
           </td>
           </tr>
         ))}
