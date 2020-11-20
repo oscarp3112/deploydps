@@ -2,16 +2,18 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 //import App from './App';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
+  
   <React.StrictMode>
     <App />
     <div className="footer">
-      <p>&copy; 2020, Universidad Don Bosco, Proyecto DPS</p>
+      <p>&copy; 2020, Universidad Don Bosco, Proyecto de cátedra DPS</p>
     </div>
   </React.StrictMode>,
   document.getElementById('root')
