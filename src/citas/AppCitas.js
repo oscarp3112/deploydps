@@ -1,12 +1,15 @@
 import React, {useState, useEffect} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {Modal, ModalBody, ModalFooter, ModalHeader} from 'reactstrap';
+import {Alert, Modal, ModalBody, ModalFooter, ModalHeader} from 'reactstrap';
 import axios from 'axios';
 import {Link} from 'react-router-dom';
+
+
 
 function App() {
   const baseUrl="https://dpsoscarpalacios.000webhostapp.com/citas.php";
   const [data, setData]=useState([]);
+  var citaocupada = false;
   const [modalInsertar, setModalInsertar]= useState(false);
   const [modalEditar, setModalEditar]= useState(false);
   const [modalEliminar, setModalEliminar]= useState(false);
@@ -37,6 +40,7 @@ function App() {
   const abrirCerrarModalEliminar=()=>{
     setModalEliminar(!modalEliminar);
   }
+  
 
   const peticionGet=async()=>{
     await axios.get(baseUrl)
@@ -46,21 +50,36 @@ function App() {
       console.log(error);
     })
   }
-
   const peticionPost=async()=>{
     var f = new FormData();
     f.append("codigoUsuario", citaSeleccionada.codigoUsuario);
     f.append("fecha", citaSeleccionada.fecha);
     f.append("hora", citaSeleccionada.hora);
-
     f.append("METHOD", "POST");
-    await axios.post(baseUrl, f)
-    .then(response=>{
-      setData(data.concat(response.data));
-      abrirCerrarModalInsertar();
-    }).catch(error=>{
-      console.log(error);
-    })
+    citaocupada = false;
+    var horaact;
+    var dataNueva=data;
+      dataNueva.map(citas=>{
+    horaact = citaSeleccionada.hora.toString();
+        if(citas.fecha == citaSeleccionada.fecha && citas.hora == horaact+":00"){
+          citaocupada = true;
+        }
+      });
+      console.log(citaocupada);
+
+      if(citaocupada == false)
+      {
+        await axios.post(baseUrl, f)
+        .then(response=>{
+          setData(data.concat(response.data));
+          abrirCerrarModalInsertar();
+        }).catch(error=>{
+          console.log(error);
+        })
+      }
+      else{
+        window.confirm('Ya existe una cita programada para la hora establecida')
+      }
   }
 
   const peticionPut=async()=>{
@@ -68,23 +87,43 @@ function App() {
     f.append("codigoUsuario", citaSeleccionada.codigoUsuario);
     f.append("fecha", citaSeleccionada.fecha);
     f.append("hora", citaSeleccionada.hora);
-
     f.append("METHOD", "PUT");
-    await axios.post(baseUrl, f, {params: {idCita: citaSeleccionada.idCita}})
-    .then(response=>{
-      var dataNueva=data;
-      dataNueva.map(citas=>{
-        if(citas.idCita===citaSeleccionada.idCita){
-          citas.codigoUsuario=citaSeleccionada.codigoUsuario;
-          citas.fecha=citaSeleccionada.fecha;
-          citas.hora=citaSeleccionada.hora;
+    citaocupada = false;
+    var horaact;
+    var dataNueva1=data;
+    var contadorcitas = 0;
+      dataNueva1.map(citas=>{
+    horaact = citaSeleccionada.hora.toString();
+        if(citas.fecha == citaSeleccionada.fecha && citas.hora == horaact+":00"){
+          contadorcitas = contadorcitas + 1;
         }
       });
-      setData(dataNueva);
-      abrirCerrarModalEditar();
-    }).catch(error=>{
-      console.log(error);
-    })
+      if (contadorcitas>0) {
+        citaocupada=true
+      }
+      console.log(citaocupada);
+
+      if (citaocupada==false)
+      {
+        await axios.post(baseUrl, f, {params: {idCita: citaSeleccionada.idCita}})
+        .then(response=>{
+          var dataNueva=data;
+          dataNueva.map(citas=>{
+            if(citas.idCita===citaSeleccionada.idCita){
+              citas.codigoUsuario=citaSeleccionada.codigoUsuario;
+              citas.fecha=citaSeleccionada.fecha;
+              citas.hora=citaSeleccionada.hora;
+            }
+          });
+          setData(dataNueva);
+          abrirCerrarModalEditar();
+        }).catch(error=>{
+          console.log(error);
+        })
+      }
+      else{
+        window.confirm('Ya existe una cita programada para la hora establecida')
+      }
   }
 
   const peticionDelete=async()=>{
@@ -124,6 +163,7 @@ function App() {
           <th>Fecha</th>
           <th>Hora</th>
           <th>Acciones</th>
+          
         </tr>
       </thead>
       <tbody>
@@ -135,8 +175,7 @@ function App() {
             <td>{citas.hora}</td>
           <td>
           <button className="btn btn-primary" onClick={()=>seleccionarCita(citas, "Editar")}>Editar</button> {"  "}
-          <button className="btn btn-danger" onClick={()=>seleccionarCita(citas, "Eliminar")}>Eliminar</button>{"  "}
-          <Link to={`/citas/${citas.idCita}`} className="btn btn-success">Ver recibo</Link>
+          <button className="btn btn-danger" onClick={()=>seleccionarCita(citas, "Eliminar")}>Eliminar</button>
           </td>
           </tr>
         ))}
@@ -157,12 +196,12 @@ function App() {
           <br />
           <label>Fecha: </label>
           <br />
-          <input type="text" className="form-control" name="fecha" onChange={handleChange}/>
+          <input type="date" className="form-control" name="fecha" onChange={handleChange}/>
           <br />
           <label>Hora: </label>
           <br />
-          <input type="text" className="form-control" name="hora" onChange={handleChange}/>
-          <br />
+          <input type="time" className="form-control" name="hora" onChange={handleChange}/>
+          <br />       
         </div>
       </ModalBody>
       <ModalFooter>
@@ -183,12 +222,14 @@ function App() {
           <br />
           <label>Fecha: </label>
           <br />
-          <input type="text" className="form-control" name="fecha" onChange={handleChange} value={citaSeleccionada && citaSeleccionada.fecha}/>
+          <input type="date" className="form-control" name="fecha" onChange={handleChange} value={citaSeleccionada && citaSeleccionada.fecha}/>
           <br />
           <label>Hora: </label>
           <br />
-          <input type="text" className="form-control" name="hora" onChange={handleChange} value={citaSeleccionada && citaSeleccionada.hora}/>
+          <input type="time" className="form-control" name="hora" onChange={handleChange} value={citaSeleccionada && citaSeleccionada.hora}/>
           <br />
+
+
         </div>
       </ModalBody>
       <ModalFooter>

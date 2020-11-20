@@ -60,6 +60,8 @@ function App() {
                 }
                 else {
                     console.log("Sesión fallida");
+                    window.confirm('Usuario o contraseña incorrecto')
+
                 }
             }).catch(error => {
                 console.log(error);

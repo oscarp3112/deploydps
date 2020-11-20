@@ -19,8 +19,6 @@ function App() {
     fecha: '',
     hora: ''
   });
-    //Botón recibos, agregar en acciones
-  //<Link to={`/citas/${citas.idCita}`} className="btn btn-success">Ver recibo</Link>
 
   const handleChange=e=>{
     const {name, value}=e.target;
@@ -42,6 +40,8 @@ function App() {
   const abrirCerrarModalEliminar=()=>{
     setModalEliminar(!modalEliminar);
   }
+
+ 
 
   const peticionGet=async()=>{
     await axios.get(baseUrl)
@@ -139,7 +139,6 @@ function App() {
             <td>{citas.fecha}</td>
             <td>{citas.hora}</td>
           <td>
-          <button className="btn btn-primary" onClick={()=>seleccionarCita(citas, "Editar")}>Editar</button> {"  "}
           <button className="btn btn-danger" onClick={()=>seleccionarCita(citas, "Eliminar")}>Eliminar</button>
           </td>
           </tr>
@@ -161,12 +160,12 @@ function App() {
           <br />
           <label>Fecha: </label>
           <br />
-          <input type="text" className="form-control" name="fecha" onChange={handleChange}/>
+          <input type="date" className="form-control" name="fecha" onChange={handleChange}/>
           <br />
           <label>Hora: </label>
           <br />
-          <input type="text" className="form-control" name="hora" onChange={handleChange}/>
-          <br />
+          <input type="time" className="form-control" name="hora" onChange={handleChange}/>
+          <br />       
         </div>
       </ModalBody>
       <ModalFooter>
